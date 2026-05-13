@@ -13,39 +13,21 @@ provider "azurerm" {
   features {}
 }
 
-# Resource Group
 resource "azurerm_resource_group" "this" {
-  name     = "rg-avm-actionrule-test"
+  name     = "rg-avm-suppression-test"
   location = "australiaeast"
 }
 
-# Action Group (required for this rule type)
-resource "azurerm_monitor_action_group" "this" {
-  name                = "ag-avm-test"
-  resource_group_name = azurerm_resource_group.this.name
-  short_name          = "avmtest"
-
-  email_receiver {
-    name          = "satish"
-    email_address = "balakrishnan.satish@hotmail.com"
-  }
-}
-
-# Module call
 module "test" {
   source = "../../"
 
-  name                = "apr-add-ag"
-  rule_type           = "action_group"
+  rule_type           = "suppression"
+  name                = "apr-suppress"
   resource_group_name = azurerm_resource_group.this.name
   location            = azurerm_resource_group.this.location
 
   scopes = [
     azurerm_resource_group.this.id
-  ]
-
-  add_action_group_ids = [
-    azurerm_monitor_action_group.this.id
   ]
 
   conditions = [
@@ -54,4 +36,22 @@ module "test" {
       values   = ["Sev3"]
     }
   ]
+
+  schedule = {
+    effective_from  = "2024-01-01T00:00:00"
+    effective_until = "2025-01-01T00:00:00"
+    time_zone       = "UTC"
+
+    recurrence = {
+      daily = {
+        start_time = "22:00:00"
+        end_time   = "23:00:00"
+      }
+      weekly = {
+        days_of_week = ["Saturday", "Sunday"]
+        start_time   = "22:00:00"
+        end_time     = "23:00:00"
+      }
+    }
+  }
 }

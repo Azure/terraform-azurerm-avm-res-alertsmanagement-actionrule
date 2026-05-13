@@ -1,17 +1,73 @@
-# TODO: Replace this dummy resource azurerm_resource_group.TODO with your module resource
-resource "azurerm_resource_group" "TODO" {
-  location = var.location
-  name     = var.name # calling code must supply the name
-  tags     = var.tags
+resource "azurerm_monitor_alert_processing_rule_action_group" "this" {
+  count = var.rule_type == "action_group" ? 1 : 0
+
+  name                 = var.name
+  resource_group_name  = var.resource_group_name
+  scopes               = var.scopes
+  description          = var.description
+  enabled              = var.enabled
+  add_action_group_ids = var.add_action_group_ids
+
+  dynamic "condition" {
+    for_each = var.conditions
+    content {
+      severity {
+        operator = condition.value.operator
+        values   = condition.value.values
+      }
+    }
+  }
+
+  tags = var.tags
 }
 
-# required AVM resources interfaces
+resource "azurerm_monitor_alert_processing_rule_suppression" "this" {
+  count = var.rule_type == "suppression" ? 1 : 0
+
+  name                = var.name
+  resource_group_name = var.resource_group_name
+  scopes              = var.scopes
+  description         = var.description
+  enabled             = var.enabled
+
+  dynamic "condition" {
+    for_each = var.conditions
+    content {
+      severity {
+        operator = condition.value.operator
+        values   = condition.value.values
+      }
+    }
+  }
+
+  schedule {
+    effective_from  = var.schedule.effective_from
+    effective_until = var.schedule.effective_until
+    time_zone       = var.schedule.time_zone
+
+    recurrence {
+      daily {
+        start_time = var.schedule.recurrence.daily.start_time
+        end_time   = var.schedule.recurrence.daily.end_time
+      }
+
+      weekly {
+        days_of_week = var.schedule.recurrence.weekly.days_of_week
+        start_time   = var.schedule.recurrence.weekly.start_time
+        end_time     = var.schedule.recurrence.weekly.end_time
+      }
+    }
+  }
+
+  tags = var.tags
+}
+
 resource "azurerm_management_lock" "this" {
   count = var.lock != null ? 1 : 0
 
   lock_level = var.lock.kind
   name       = coalesce(var.lock.name, "lock-${var.lock.kind}")
-  scope      = azurerm_resource_group.TODO.id # TODO: Replace with your azurerm resource name
+  scope      = var.rule_type == "action_group" ? azurerm_monitor_alert_processing_rule_action_group.this[0].id : azurerm_monitor_alert_processing_rule_suppression.this[0].id
   notes      = var.lock.kind == "CanNotDelete" ? "Cannot delete the resource or its child resources." : "Cannot delete or modify the resource or its child resources."
 }
 
@@ -19,7 +75,7 @@ resource "azurerm_role_assignment" "this" {
   for_each = var.role_assignments
 
   principal_id                           = each.value.principal_id
-  scope                                  = azurerm_resource_group.TODO.id # TODO: Replace this dummy resource azurerm_resource_group.TODO with your module resource
+  scope                                  = var.rule_type == "action_group" ? azurerm_monitor_alert_processing_rule_action_group.this[0].id : azurerm_monitor_alert_processing_rule_suppression.this[0].id
   condition                              = each.value.condition
   condition_version                      = each.value.condition_version
   delegated_managed_identity_resource_id = each.value.delegated_managed_identity_resource_id
