@@ -27,19 +27,6 @@ variable "rule_type" {
   }
 }
 
-variable "description" {
-  type        = string
-  default     = null
-  description = "Description of the alert processing rule."
-}
-
-variable "enabled" {
-  type        = bool
-  default     = true
-  description = "Whether the alert processing rule is enabled."
-  nullable    = false
-}
-
 variable "scopes" {
   type        = list(string)
   description = "List of scopes that the alert processing rule applies to."
@@ -63,25 +50,10 @@ variable "conditions" {
   nullable    = false
 }
 
-variable "schedule" {
-  type = object({
-    effective_from  = string
-    effective_until = string
-    time_zone       = string
-    recurrence = object({
-      daily = object({
-        start_time = string
-        end_time   = string
-      })
-      weekly = object({
-        days_of_week = list(string)
-        start_time   = string
-        end_time     = string
-      })
-    })
-  })
+variable "description" {
+  type        = string
   default     = null
-  description = "Schedule configuration for suppression rules (required when rule_type = suppression)."
+  description = "Description of the alert processing rule."
 }
 
 variable "enable_telemetry" {
@@ -90,7 +62,15 @@ variable "enable_telemetry" {
   description = <<DESCRIPTION
 This variable controls whether or not telemetry is enabled for the module.
 For more information see <https://aka.ms/avm/telemetryinfo>.
+If it is set to false, then no telemetry will be collected.
 DESCRIPTION
+  nullable    = false
+}
+
+variable "enabled" {
+  type        = bool
+  default     = true
+  description = "Whether the alert processing rule is enabled."
   nullable    = false
 }
 
@@ -122,6 +102,27 @@ variable "role_assignments" {
   default     = {}
   description = "Role assignments to apply to the resource."
   nullable    = false
+}
+
+variable "schedule" {
+  type = object({
+    effective_from  = string
+    effective_until = string
+    time_zone       = string
+    recurrence = object({
+      daily = object({
+        start_time = string
+        end_time   = string
+      })
+      weekly = object({
+        days_of_week = list(string)
+        start_time   = string
+        end_time     = string
+      })
+    })
+  })
+  default     = null
+  description = "Schedule configuration for suppression rules (required when rule_type = suppression)."
 }
 
 variable "tags" {

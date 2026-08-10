@@ -1,12 +1,13 @@
 resource "azurerm_monitor_alert_processing_rule_action_group" "this" {
   count = var.rule_type == "action_group" ? 1 : 0
 
+  add_action_group_ids = var.add_action_group_ids
   name                 = var.name
   resource_group_name  = var.resource_group_name
   scopes               = var.scopes
   description          = var.description
   enabled              = var.enabled
-  add_action_group_ids = var.add_action_group_ids
+  tags                 = var.tags
 
   dynamic "condition" {
     for_each = var.conditions
@@ -17,8 +18,6 @@ resource "azurerm_monitor_alert_processing_rule_action_group" "this" {
       }
     }
   }
-
-  tags = var.tags
 }
 
 resource "azurerm_monitor_alert_processing_rule_suppression" "this" {
@@ -29,6 +28,7 @@ resource "azurerm_monitor_alert_processing_rule_suppression" "this" {
   scopes              = var.scopes
   description         = var.description
   enabled             = var.enabled
+  tags                = var.tags
 
   dynamic "condition" {
     for_each = var.conditions
@@ -58,8 +58,6 @@ resource "azurerm_monitor_alert_processing_rule_suppression" "this" {
       }
     }
   }
-
-  tags = var.tags
 }
 
 resource "azurerm_management_lock" "this" {
