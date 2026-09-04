@@ -15,8 +15,8 @@ provider "azurerm" {
 
 # Resource Group
 resource "azurerm_resource_group" "this" {
-  name     = "rg-avm-actionrule-test"
   location = "australiaeast"
+  name     = "rg-avm-actionrule-test"
 }
 
 # Action Group (required for this rule type)
@@ -35,19 +35,16 @@ resource "azurerm_monitor_action_group" "this" {
 module "test" {
   source = "../../"
 
-  name                = "apr-add-ag"
-  rule_type           = "action_group"
-  resource_group_name = azurerm_resource_group.this.name
   location            = azurerm_resource_group.this.location
-
+  name                = "apr-add-ag"
+  resource_group_name = azurerm_resource_group.this.name
+  rule_type           = "action_group"
   scopes = [
     azurerm_resource_group.this.id
   ]
-
   add_action_group_ids = [
     azurerm_monitor_action_group.this.id
   ]
-
   conditions = [
     {
       operator = "Equals"

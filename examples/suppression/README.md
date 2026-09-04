@@ -19,29 +19,26 @@ provider "azurerm" {
 }
 
 resource "azurerm_resource_group" "this" {
-  name     = "rg-avm-suppression-test"
   location = "australiaeast"
+  name     = "rg-avm-suppression-test"
 }
 
 module "test" {
   source = "../../"
 
-  rule_type           = "suppression"
+  location            = azurerm_resource_group.this.location
   name                = "apr-suppress"
   resource_group_name = azurerm_resource_group.this.name
-  location            = azurerm_resource_group.this.location
-
+  rule_type           = "suppression"
   scopes = [
     azurerm_resource_group.this.id
   ]
-
   conditions = [
     {
       operator = "Equals"
       values   = ["Sev3"]
     }
   ]
-
   schedule = {
     effective_from  = "2024-01-01T00:00:00"
     effective_until = "2025-01-01T00:00:00"
