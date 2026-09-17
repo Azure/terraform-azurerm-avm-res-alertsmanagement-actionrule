@@ -34,6 +34,7 @@ module "test" {
       values   = ["Sev3"]
     }
   ]
+  enable_telemetry = false
   schedule = {
     effective_from  = "2024-01-01T00:00:00"
     effective_until = "2025-01-01T00:00:00"

@@ -51,4 +51,5 @@ module "test" {
       values   = ["Sev3"]
     }
   ]
+  enable_telemetry = false
 }
