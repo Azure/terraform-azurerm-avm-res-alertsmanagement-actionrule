@@ -58,7 +58,7 @@ module "test" {
       values   = ["Sev3"]
     }
   ]
-  enable_telemetry = false
+  enable_telemetry = var.enable_telemetry
 }
 ```
 
@@ -95,7 +95,7 @@ If it is set to false, then no telemetry will be collected.
 
 Type: `bool`
 
-Default: `true`
+Default: `false`
 
 ## Outputs
 
