@@ -207,6 +207,10 @@ Description: The name of the alert processing rule.
 
 Description: The full alert processing rule resource.
 
+### <a name="output_resource_id"></a> [resource\_id](#output\_resource\_id)
+
+Description: The resource ID of the alert processing rule.
+
 ## Modules
 
 No modules.
