@@ -1,9 +1,3 @@
-variable "location" {
-  type        = string
-  description = "Azure region (kept for AVM consistency)."
-  nullable    = false
-}
-
 variable "name" {
   type        = string
   description = "The name of the alert processing rule."
@@ -72,6 +66,17 @@ variable "enabled" {
   default     = true
   description = "Whether the alert processing rule is enabled."
   nullable    = false
+}
+
+variable "location" {
+  type        = string
+  default     = null
+  description = "Azure region (kept for AVM consistency)."
+
+  validation {
+    condition     = !var.enable_telemetry || var.location != null
+    error_message = "The location must not be null when telemetry is enabled."
+  }
 }
 
 variable "lock" {

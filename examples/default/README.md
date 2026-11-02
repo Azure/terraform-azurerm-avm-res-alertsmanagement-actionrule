@@ -44,7 +44,6 @@ resource "azurerm_monitor_action_group" "this" {
 module "test" {
   source = "../../"
 
-  location            = azurerm_resource_group.this.location
   name                = "apr-add-ag"
   resource_group_name = azurerm_resource_group.this.name
   rule_type           = "action_group"
@@ -61,6 +60,7 @@ module "test" {
     }
   ]
   enable_telemetry = var.enable_telemetry
+  location         = azurerm_resource_group.this.location
 }
 ```
 
