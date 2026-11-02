@@ -23,7 +23,6 @@ resource "azurerm_resource_group" "this" {
 module "test" {
   source = "../../"
 
-  location            = azurerm_resource_group.this.location
   name                = "apr-suppress"
   resource_group_name = azurerm_resource_group.this.name
   rule_type           = "suppression"
@@ -37,6 +36,7 @@ module "test" {
     }
   ]
   enable_telemetry = var.enable_telemetry
+  location         = azurerm_resource_group.this.location
   schedule = {
     effective_from  = "2024-01-01T00:00:00"
     effective_until = "2025-01-01T00:00:00"
